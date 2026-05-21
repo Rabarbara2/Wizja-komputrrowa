@@ -13,7 +13,7 @@ MODEL_PATH = os.path.join(MODELS_DIR, "knn_model.pkl")
 SCALER_PATH = os.path.join(MODELS_DIR, "scaler.pkl")
 
 
-def train_model(dataset_path):
+def train_model(dataset_path: str):
     """
     Trenuje model KNN na danych z pliku CSV.
 

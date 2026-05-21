@@ -9,20 +9,13 @@ SCALER_PATH = "models/scaler.pkl"
 
 
 CLASS_NAMES = {
-    1: "Ulmus carpinifolia",
-    2: "Acer",
-    3: "Salix aurita",
-    4: "Quercus",
-    5: "Alnus incana",
-    6: "Betula pubescens",
-    7: "Salix alba 'Sericea'",
-    8: "Populus tremula",
-    9: "Ulmus glabra",
-    10: "Sorbus aucuparia",
-    11: "Salix cinerea",
-    12: "Populus",
+    2: "Acer - klon",
+    4: "Quercus - dąb",
+    7: "Salix alba - wierzba biała",
+    8: "Populus tremula - topola osika",
+    10: "Sorbus aucuparia - jarząb pospolity",
+    12: "Populus - topola",
     13: "Tilia - lipa",
-    14: "Sorbus intermedia",
     15: "Fagus silvatica - buk",
 }
 

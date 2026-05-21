@@ -1,25 +1,19 @@
+from pathlib import Path
+
 import cv2
 import numpy as np
 import re
-import matplotlib.pyplot as plt
 from skimage.feature import local_binary_pattern
-import os
 
-def get_label(filename):
-    match = re.search(r"l(\d+)nr", filename)
+def get_label(file_path: str):
+    file_name = Path(file_path).name
+    match = re.search(r"l(\d+)nr", file_name)
     if match:
         return int(match.group(1))
     else:
         return 0
 
-# wybierz jedno
-#folder = "liscie"
-#folder = "liscietestowanko"
-folder = "Nowy folder"
-
-#files = os.listdir(folder) # lista plików w folderze z liściami (liśćmi?)
-
-def analyze_image(image_path):
+def analyze_image(image_path: str):
 
     img = cv2.imread(image_path)  # wczytanie obrazu
 
@@ -105,15 +99,20 @@ def analyze_image(image_path):
     return features
 
 
-def generate_dataset(directory: str):
-    for file in directory:
-        image_path = directory + "\\" + file
-        label = get_label(file)      #rodzaj liścia z nazwy pliku
-        features = analyze_image(image_path)
+def generate_dataset(directory_path: str, target_file: str):
+    directory = Path(directory_path)
+    image_paths = [
+        path for path in directory.iterdir()
+    ]
+    for index, file_path in enumerate(image_paths):
+        print(file_path)
+        label = get_label(file_path)      #rodzaj liścia z nazwy pliku
+        features = analyze_image(file_path)
         row = np.append(label, features)
+        print(f"[{index + 1}/{len(image_paths)}] OK: {file_path} -> label={label}")
 
         # zapis 10 liczb po przecinku (wystarczy imo)
-        with open("dataset.csv", "ab") as f:
+        with open(target_file + ".csv", "ab") as f:
             np.savetxt(f, [row], delimiter=",", fmt="%.10f")
 
 
