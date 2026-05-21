@@ -34,6 +34,7 @@ def train_model(dataset_path: str):
 
     y = df.iloc[:, 0]
     X = df.iloc[:, 1:]
+    X = X.abs()
 
     print("Liczba próbek:", len(df))
     print("Liczba cech:", X.shape[1])

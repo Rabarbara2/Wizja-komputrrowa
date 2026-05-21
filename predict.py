@@ -1,7 +1,6 @@
 import os
 import joblib
 
-from leaf_analyzer import analyze_image
 from zdjecia import analyze_image
 
 MODEL_PATH = "models/knn_model.pkl"

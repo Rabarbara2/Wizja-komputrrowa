@@ -96,7 +96,8 @@ def analyze_image(image_path: str):
     features = np.concatenate([hu, hist])
 
     # rząd do dancych jaki to liść + jego cechy (trzeba odciąć jaki to liść do uczenia!)
-    return features
+    return np.abs(features)
+    #return features
 
 
 def generate_dataset(directory_path: str, target_file: str):
