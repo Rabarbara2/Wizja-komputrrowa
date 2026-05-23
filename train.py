@@ -12,6 +12,8 @@ MODELS_DIR = "models"
 MODEL_PATH = os.path.join(MODELS_DIR, "knn_model.pkl")
 SCALER_PATH = os.path.join(MODELS_DIR, "scaler.pkl")
 
+# Nazwy plików, w których zostanie zapisany wytrenowany model i scaler.
+# Scaler przydaje się, aby skalować nowe dane w ten sam sposób co dane treningowe.
 
 def train_model(dataset_path: str):
     """
@@ -21,19 +23,24 @@ def train_model(dataset_path: str):
         label, cecha1, cecha2, cecha3, ...
     """
 
+    # Wczytujemy dane z pliku CSV bez nagłówka, zakładając że pierwsza kolumna to etykiety klas.
     df = pd.read_csv(dataset_path, header=None)
 
+    # Usuwamy wszystkie wiersze zawierające wartości brakujące, bo nie można ich użyć do uczenia.
     df = df.dropna()
 
     # Jeśli label 0 oznacza błąd parsowania nazwy pliku, usuwamy takie wiersze.
-    # W waszym przypadku klasy są 1-15, więc 0 nie powinno być poprawną klasą.
+    # W tym projekcie prawidłowe klasy zaczynają się od 1, więc 0 jest odrzucane.
     df = df[df.iloc[:, 0] != 0]
 
     if df.empty:
         raise ValueError("Dataset jest pusty po usunięciu błędnych wierszy.")
 
+    # Oddzielamy etykiety (y) od cech (X). Pierwsza kolumna to etykieta klasy.
     y = df.iloc[:, 0]
     X = df.iloc[:, 1:]
+
+    # Używamy wartości bezwzględnej, jeśli cechy mogą zawierać ujemne wartości.
     X = X.abs()
 
     print("Liczba próbek:", len(df))
@@ -41,6 +48,7 @@ def train_model(dataset_path: str):
     print("\nLiczność klas:")
     print(y.value_counts().sort_index())
 
+    # Dzielimy dane na zbiór treningowy i testowy. Stratify=y zachowuje rozkład klas.
     X_train, X_test, y_train, y_test = train_test_split(
         X,
         y,
@@ -51,10 +59,10 @@ def train_model(dataset_path: str):
 
     scaler = StandardScaler()
 
-    # Scaler uczymy tylko na zbiorze treningowym.
+    # Uczymy scaler tylko na danych treningowych, aby uniknąć wycieku informacji z testu.
     X_train_scaled = scaler.fit_transform(X_train)
 
-    # Zbiór testowy tylko transformujemy.
+    # Zastosowanie tego samego przeskalowania do danych testowych.
     X_test_scaled = scaler.transform(X_test)
 
     model = KNeighborsClassifier(
@@ -62,8 +70,10 @@ def train_model(dataset_path: str):
         metric="euclidean"
     )
 
+    # Trenujemy klasyfikator KNN na przeskalowanych cechach treningowych.
     model.fit(X_train_scaled, y_train)
 
+    # Przewidujemy etykiety dla danych testowych.
     y_pred = model.predict(X_test_scaled)
 
     print("\nAccuracy:", accuracy_score(y_test, y_pred))
@@ -81,12 +91,4 @@ def train_model(dataset_path: str):
 
     print(f"\nModel zapisany do: {MODEL_PATH}")
     print(f"Scaler zapisany do: {SCALER_PATH}")
-
-
-if __name__ == "__main__":
-    dataset_path = input("Podaj ścieżkę do pliku CSV, np. dataset_teach.csv: ")
-
-    if not dataset_path.strip():
-        dataset_path = "dataset_teach.csv"
-
-    train_model(dataset_path)
+    return accuracy_score(y_test, y_pred)

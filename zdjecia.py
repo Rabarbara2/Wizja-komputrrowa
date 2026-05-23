@@ -100,7 +100,7 @@ def analyze_image(image_path: str):
     #return features
 
 
-def generate_dataset(directory_path: str, target_file: str):
+def generate_dataset(directory_path: str, target_path: str):
     directory = Path(directory_path)
     image_paths = [
         path for path in directory.iterdir()
@@ -113,7 +113,7 @@ def generate_dataset(directory_path: str, target_file: str):
         print(f"[{index + 1}/{len(image_paths)}] OK: {file_path} -> label={label}")
 
         # zapis 10 liczb po przecinku (wystarczy imo)
-        with open(target_file + ".csv", "ab") as f:
+        with open(target_path + ".csv", "ab") as f:
             np.savetxt(f, [row], delimiter=",", fmt="%.10f")
 
 
