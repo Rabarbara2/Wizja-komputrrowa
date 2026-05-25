@@ -3,6 +3,8 @@ from pathlib import Path
 import cv2
 import numpy as np
 import re
+
+from matplotlib import pyplot as plt
 from skimage.feature import local_binary_pattern
 
 def get_label(file_path: str):
@@ -96,7 +98,14 @@ def analyze_image(image_path: str):
     features = np.concatenate([hu, hist])
 
     # rząd do dancych jaki to liść + jego cechy (trzeba odciąć jaki to liść do uczenia!)
-    return np.abs(features)
+    return {
+        "features": np.abs(features),
+        "img_rgb": img_rgb,
+        "segmented": segmented,
+        "thresh": thresh,
+        "lbp": lbp,
+        "hist": hist
+    }
     #return features
 
 
@@ -116,7 +125,37 @@ def generate_dataset(directory_path: str, target_path: str):
         with open(target_path + ".csv", "ab") as f:
             np.savetxt(f, [row], delimiter=",", fmt="%.10f")
 
+def pokaz_obrazek(img_rgb,segmented, thresh, lbp, hist, predykcja):
+    plt.figure(figsize=(14, 8))
 
+    plt.suptitle(f"Gatunek drzewa: {predykcja}", fontsize=14)
+
+    plt.subplot(2, 3, 1)
+    plt.title("Oryginalny obraz")
+    plt.imshow(img_rgb)
+    plt.axis("off")
+
+    plt.subplot(2, 3, 2)
+    plt.title("Segmentacja (GrabCut)")
+    plt.imshow(segmented)
+    plt.axis("off")
+
+    plt.subplot(2, 3, 3)
+    plt.title("Maska")
+    plt.imshow(thresh, cmap="gray")
+    plt.axis("off")
+
+    plt.subplot(2, 3, 4)
+    plt.title("LBP")
+    plt.imshow(lbp, cmap="gray")
+    plt.axis("off")
+
+    plt.subplot(2, 3, 5)
+    plt.title("Histogram LBP")
+    plt.bar(range(len(hist)), hist)
+
+    plt.tight_layout()
+    plt.show()
 
 # # ładne obrazki dla umilenia czasu, ale tylko jeden liść
 #

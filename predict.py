@@ -1,7 +1,7 @@
 import os
 import joblib
 
-from zdjecia import analyze_image
+from zdjecia import analyze_image, pokaz_obrazek
 
 MODEL_PATH = "models/knn_model.pkl"
 SCALER_PATH = "models/scaler.pkl"
@@ -56,7 +56,11 @@ def predict_leaf(image_path, show_debug=True):
     model, scaler = load_model_and_scaler()
 
     # Analizujemy obraz, aby uzyskać wektor cech wejściowych.
-    features = analyze_image(image_path)
+    result = analyze_image(image_path)
+
+    features = result["features"]
+
+
 
     # Skalujemy cechy tym samym scalerem, który był użyty podczas treningu.
     features_scaled = scaler.transform([features])
@@ -69,19 +73,15 @@ def predict_leaf(image_path, show_debug=True):
     # Tłumaczymy etykietę na nazwę klasy, jeśli jest dostępna.
     class_name = CLASS_NAMES.get(label, f"Nieznana klasa: {label}")
 
+    pokaz_obrazek(
+        result["img_rgb"],
+        result["segmented"],
+        result["thresh"],
+        result["lbp"],
+        result["hist"],
+        class_name
+    )
+
     return label, class_name
 
 
-
-
- #Przykład zastosowania funkcji predict_leaf do klasyfikacji pojedynczego zdjęcia liścia.
- '''
- image_path = input("Podaj ścieżkę do zdjęcia liścia: ")
- label, class_name = predict_leaf(
-     image_path,
-     show_debug=True
- )
- print("\nWynik klasyfikacji:")
- print(f"Label: {label}")
- print(f"Nazwa liścia: {class_name}")
- '''
